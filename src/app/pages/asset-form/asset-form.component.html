@@ -1,0 +1,159 @@
+<header class="page-head">
+  <div>
+    <h1>{{ isEditMode ? 'تعديل جهاز' : 'إضافة جهاز جديد' }}</h1>
+    <p class="sub">سجّل بيانات الجهاز عشان يظهر في لوحة التحكم وقائمة الأجهزة</p>
+  </div>
+
+  <div class="head-actions">
+    <input
+      #excelInput
+      type="file"
+      accept=".xlsx,.xls"
+      class="hidden-input"
+      (change)="onFileSelected($event)"
+    />
+
+    <button
+      type="button"
+      class="btn btn-import"
+      [disabled]="isUploading()"
+      (click)="excelInput.click()"
+    >
+      <svg class="import-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 21V9m0 0l-4 4m4-4l4 4M4 7V5a2 2 0 012-2h12a2 2 0 012 2v2"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>استيراد Excel</span>
+    </button>
+
+    <a routerLink="/assets" class="btn btn-ghost">رجوع للقائمة</a>
+  </div>
+</header>
+
+<!-- كارت تأكيد الرفع - بيظهر بس لما يتم اختيار ملف، وقبل أي رفع فعلي -->
+@if (selectedFile()) {
+  <div class="confirm-card">
+    <div class="confirm-info">
+      <svg class="file-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <p class="file-name">{{ selectedFile()!.name }}</p>
+        <p class="file-size">{{ formatFileSize(selectedFile()!.size) }}</p>
+      </div>
+    </div>
+
+    <div class="confirm-actions">
+      <button
+        type="button"
+        class="btn btn-confirm"
+        [class.is-loading]="isUploading()"
+        [disabled]="isUploading()"
+        (click)="confirmUpload()"
+      >
+        @if (isUploading()) {
+          <span class="spinner"></span>
+          <span>جاري الرفع...</span>
+        } @else {
+          <span>تأكيد الرفع</span>
+        }
+      </button>
+      <button
+        type="button"
+        class="btn btn-cancel"
+        [disabled]="isUploading()"
+        (click)="cancelUpload()"
+      >
+        إلغاء
+      </button>
+    </div>
+  </div>
+}
+
+@if (uploadError()) {
+  <div class="upload-msg upload-error">{{ uploadError() }}</div>
+}
+@if (uploadSuccess()) {
+  <div class="upload-msg upload-success">{{ uploadSuccess() }}</div>
+}
+
+<form class="card form-card" [formGroup]="form" (ngSubmit)="save()">
+  <div class="grid">
+    <div class="field">
+      <label for="company">الشركة *</label>
+      <select id="company" formControlName="company">
+        <option value="" disabled>اختر الشركة</option>
+        @for (c of companies; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+      @if (submitted() && form.controls.company.invalid) {
+        <span class="error">اختيار الشركة مطلوب</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="deviceType">نوع الجهاز *</label>
+      <select id="deviceType" formControlName="deviceType">
+        <option value="" disabled>اختر النوع</option>
+        @for (t of deviceTypes; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+      @if (submitted() && form.controls.deviceType.invalid) {
+        <span class="error">اختيار نوع الجهاز مطلوب</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="serialNumber">الرقم التسلسلي (Serial Number) *</label>
+      <input id="serialNumber" type="text" formControlName="serialNumber" placeholder="مثال: SN-EG-000123" />
+      @if (submitted() && form.controls.serialNumber.invalid) {
+        <span class="error">الرقم التسلسلي مطلوب</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="model">الموديل</label>
+      <input id="model" type="text" formControlName="model" placeholder="مثال: Dell Latitude 5440" />
+    </div>
+
+    <div class="field">
+      <label for="status">الحالة *</label>
+      <select id="status" formControlName="status">
+        <option value="" disabled>اختر الحالة</option>
+        @for (s of statuses; track s) {
+          <option [value]="s">{{ statusLabels[s] }}</option>
+        }
+      </select>
+      @if (submitted() && form.controls.status.invalid) {
+        <span class="error">اختيار الحالة مطلوب</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="assignedTo">المستخدم / القسم</label>
+      <input id="assignedTo" type="text" formControlName="assignedTo" placeholder="اسم الموظف أو القسم" />
+    </div>
+
+    <div class="field">
+      <label for="dateAdded">تاريخ الإضافة</label>
+      <input id="dateAdded" type="date" formControlName="dateAdded" />
+    </div>
+
+    <div class="field span-2">
+      <label for="notes">ملاحظات</label>
+      <textarea id="notes" formControlName="notes" rows="3" placeholder="أي تفاصيل إضافية عن الجهاز"></textarea>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-accent">{{ isEditMode ? 'حفظ التعديلات' : 'حفظ الجهاز' }}</button>
+    <a routerLink="/assets" class="btn btn-ghost">إلغاء</a>
+  </div>
+  @if (saveError()) {
+  <div class="upload-msg upload-error">{{ saveError() }}</div>
+}
+</form>

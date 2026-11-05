@@ -1,0 +1,79 @@
+<header class="page-head">
+  <div>
+    <h1>لوحة التحكم</h1>
+    <p class="sub">نظرة عامة على أصول IT في الشركات الخمس</p>
+  </div>
+  <a routerLink="/assets/new" class="btn btn-accent">+ إضافة جهاز</a>
+</header>
+
+@if (isEmpty()) {
+  <div class="empty card">
+    <h3>لسه مفيش أجهزة مسجلة</h3>
+    <p>ابدأ بإضافة أول جهاز، أو حمّل بيانات تجريبية عشان تشوف شكل اللوحة.</p>
+    <div class="empty-actions">
+      <a routerLink="/assets/new" class="btn btn-primary">إضافة جهاز</a>
+      <button class="btn btn-ghost" (click)="loadSampleData()">تحميل بيانات تجريبية</button>
+    </div>
+  </div>
+} @else {
+  <section class="stat-row">
+    <div class="stat card">
+      <span class="stat-label">إجمالي الأجهزة</span>
+      <span class="stat-value">{{ totals().total }}</span>
+    </div>
+    @for (type of deviceTypes; track trackByType($index, type)) {
+      <div class="stat card">
+        <span class="stat-label">{{ type }}</span>
+        <span class="stat-value">{{ totals().byType[type] }}</span>
+      </div>
+    }
+    @for (status of statuses; track trackByStatus($index, status)) {
+      <div class="stat card" [class]="'stat-' + status">
+        <span class="stat-label">{{ statusLabels[status] }}</span>
+        <span class="stat-value">{{ totals().byStatus[status] }}</span>
+      </div>
+    }
+  </section>
+
+  <section class="card table-card">
+    <div class="table-card-head">
+      <h2>الأجهزة حسب الشركة</h2>
+      <button class="btn btn-ghost btn-sm" (click)="clearAll()">مسح كل البيانات</button>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>الشركة</th>
+            <th>الإجمالي</th>
+            @for (type of deviceTypes; track trackByType($index, type)) {
+              <th>{{ type }}</th>
+            }
+            @for (status of statuses; track trackByStatus($index, status)) {
+              <th>{{ statusLabels[status] }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of summary(); track trackByCompany($index, row)) {
+            <tr>
+              <td class="company-cell">
+                <span class="bar-track">
+                  <span class="bar-fill" [style.width]="barWidth(row.total)"></span>
+                </span>
+                {{ row.company }}
+              </td>
+              <td class="num">{{ row.total }}</td>
+              @for (type of deviceTypes; track trackByType($index, type)) {
+                <td class="num">{{ row.byType[type] }}</td>
+              }
+              @for (status of statuses; track trackByStatus($index, status)) {
+                <td class="num">{{ row.byStatus[status] }}</td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}

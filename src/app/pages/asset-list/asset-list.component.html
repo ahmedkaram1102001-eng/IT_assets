@@ -1,0 +1,110 @@
+<header class="page-head">
+  <div>
+    <h1>كل الأجهزة</h1>
+    <p class="sub">{{ resultCount() }} من {{ totalCount() }} جهاز</p>
+  </div>
+  <a routerLink="/assets/new" class="btn btn-accent">+ إضافة جهاز</a>
+</header>
+
+<section class="card filters">
+  <div class="field">
+    <label>بحث</label>
+    <input
+      placeholder="رقم تسلسلي، موديل، أو اسم مستخدم"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+    />
+  </div>
+
+  <div class="field">
+    <label>الشركة</label>
+    <select [ngModel]="companyFilter()" (ngModelChange)="companyFilter.set($event)">
+      <option value="">كل الشركات</option>
+      @for (c of companies; track c) {
+        <option [value]="c">{{ c }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label>نوع الجهاز</label>
+    <select [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)">
+      <option value="">الكل</option>
+      @for (t of deviceTypes; track t) {
+        <option [value]="t">{{ t }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label>الحالة</label>
+    <select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+      <option value="">الكل</option>
+      @for (s of statuses; track s) {
+        <option [value]="s">{{ statusLabels[s] }}</option>
+      }
+    </select>
+  </div>
+
+  <button class="btn btn-ghost" (click)="clearFilters()">مسح الفلاتر</button>
+</section>
+
+<section class="card table-card">
+  @if (!filtered().length) {
+    <div class="empty-row">
+      لا توجد أجهزة مطابقة.
+      <a routerLink="/assets/new">أضف جهاز جديد</a>
+    </div>
+  } @else {
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>الشركة</th>
+            <th>نوع الجهاز</th>
+            <th>الرقم التسلسلي</th>
+            <th>الموديل</th>
+            <th>الحالة</th>
+            <th>المستخدم</th>
+            <th>تاريخ الإضافة</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (a of filtered(); track a.id) {
+            <tr>
+              <td>{{ a.company || '—' }}</td>
+              <td>{{ a.deviceType || '—' }}</td>
+              <td class="mono">{{ a.serialNumber || '—' }}</td>
+              <td>{{ a.model || '—' }}</td>
+              <td><app-status-badge [status]="a.status" /></td>
+              <td>{{ a.assignedTo || '—' }}</td>
+              <td class="mono">{{ a.dateAdded || '—' }}</td>
+
+              <td class="actions">
+                <a
+                  [routerLink]="['/assets', a.id, 'edit']"
+                  class="btn btn-ghost btn-sm">
+                  تعديل
+                </a>
+
+                <a
+                  [routerLink]="['/assets', a.id, 'maintenance']"
+                  class="btn btn-ghost btn-sm">
+                  سجل الصيانة
+                </a>
+
+                <button
+                  class="btn btn-danger btn-sm"
+                  (click)="remove(a)">
+                  حذف
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

@@ -1,0 +1,103 @@
+:host {
+  display: block;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.8fr) repeat(3, minmax(150px, 1fr)) auto;
+  align-items: end;
+  gap: 1rem;
+  padding: 1.1rem 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.filters .field {
+  min-width: 0;
+}
+
+.filters .btn {
+  align-self: end;
+  white-space: nowrap;
+}
+
+.table-card {
+  padding: 0.5rem;
+}
+
+.table-scroll {
+  padding-bottom: 0.3rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.empty-row {
+  padding: 2.8rem 1.2rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.empty-row a {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+  }
+
+  .filters .btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .filters .btn {
+    grid-column: auto;
+    width: 100%;
+    justify-self: stretch;
+  }
+}
+.filters > .btn-ghost {
+  position: relative;
+  background: transparent;
+  border: 1.5px dashed var(--text-secondary, #9ca3af);
+  color: var(--text-secondary, #6b7280);
+  border-radius: 8px;
+  font-weight: 600;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.filters > .btn-ghost::before {
+  content: "↺ ";
+  display: inline-block;
+  transition: transform 0.35s ease;
+}
+
+.filters > .btn-ghost:hover {
+  border-color: var(--danger, #ef4444);
+  border-style: solid;
+  color: var(--danger, #ef4444);
+  background: color-mix(in srgb, var(--danger, #ef4444) 8%, transparent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--danger, #ef4444) 15%, transparent);
+}
+
+.filters > .btn-ghost:hover::before {
+  transform: rotate(-90deg);
+}
+
+.filters > .btn-ghost:active {
+  transform: translateY(0);
+  box-shadow: none;
+}

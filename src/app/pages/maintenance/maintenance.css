@@ -1,0 +1,9 @@
+.notice { padding: 1rem 1.25rem; color: #7a5b00; background: #fff8e1; border: 1px solid #ffe082; }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 0.6rem 0.75rem; text-align: right; border-bottom: 1px solid #eee; }
+.row-actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+.inline-close { display: flex; gap: 0.4rem; align-items: center; }
+.inline-close input { width: 110px; }
+.btn-sm { padding: 0.3rem 0.6rem; font-size: 0.85rem; }
+.btn-danger { background: #fdecea; color: #b3261e; }
+.empty { color: #888; padding: 0.5rem 0; }

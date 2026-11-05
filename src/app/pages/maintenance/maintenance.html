@@ -1,0 +1,90 @@
+@if (asset(); as a) {
+<header class="page-head">
+  <div>
+    <h1>سجل الصيانة</h1>
+    <p class="sub">{{ a.model }} — {{ a.serialNumber }} — {{ a.company }}</p>
+  </div>
+  <a routerLink="/assets" class="btn btn-ghost">رجوع للقائمة</a>
+</header>
+
+@if (!hasOpenRecord()) {
+<form class="card form-card" [formGroup]="openForm" (ngSubmit)="sendToMaintenance()">
+  <h2>إرسال الجهاز للصيانة</h2>
+  <div class="grid">
+    <div class="field">
+      <label for="vendorName">شركة الصيانة *</label>
+      <input id="vendorName" type="text" formControlName="vendorName" placeholder="اسم الشركة" />
+      @if (submitted() && openForm.controls.vendorName.invalid) {
+        <span class="error">اسم شركة الصيانة مطلوب</span>
+      }
+    </div>
+    <div class="field">
+      <label for="sentDate">تاريخ الإرسال *</label>
+      <input id="sentDate" type="date" formControlName="sentDate" />
+    </div>
+    <div class="field span-2">
+      <label for="issueDescription">وصف العطل *</label>
+      <textarea id="issueDescription" formControlName="issueDescription" rows="2" placeholder="مثال: شاشة معطلة"></textarea>
+      @if (submitted() && openForm.controls.issueDescription.invalid) {
+        <span class="error">وصف العطل مطلوب</span>
+      }
+    </div>
+    <div class="field span-2">
+      <label for="notes">ملاحظات</label>
+      <textarea id="notes" formControlName="notes" rows="2"></textarea>
+    </div>
+  </div>
+  <div class="form-actions">
+    <button type="submit" class="btn btn-accent">إرسال للصيانة</button>
+  </div>
+</form>
+} @else {
+<div class="card notice">
+  <p>الجهاز حاليًا في الصيانة. أقفل السجل المفتوح تحت لما يرجع عشان تقدر تبعت سجل جديد.</p>
+</div>
+}
+
+<section class="card">
+  <h2>تاريخ الصيانة ({{ records().length }})</h2>
+
+  @if (records().length === 0) {
+    <p class="empty">لا يوجد سجلات صيانة سابقة لهذا الجهاز.</p>
+  } @else {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>شركة الصيانة</th><th>العطل</th><th>تاريخ الإرسال</th>
+          <th>تاريخ الرجوع</th><th>التكلفة</th><th>الحالة</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of records(); track r.id) {
+          <tr>
+            <td>{{ r.vendorName }}</td>
+            <td>{{ r.issueDescription }}</td>
+            <td>{{ r.sentDate }}</td>
+            <td>{{ r.returnDate ?? '—' }}</td>
+            <td>{{ r.cost !== null ? (r.cost + ' ج.م') : '—' }}</td>
+            <td>{{ r.returnDate === null ? 'قيد الصيانة' : 'تم الرجوع' }}</td>
+            <td class="row-actions">
+              @if (r.returnDate === null) {
+                @if (closingId() === r.id) {
+                  <div class="inline-close" [formGroup]="closeForm">
+                    <input type="date" formControlName="returnDate" />
+                    <input type="number" formControlName="cost" placeholder="التكلفة" min="0" />
+                    <button type="button" class="btn btn-accent btn-sm" (click)="confirmClose()">تأكيد</button>
+                    <button type="button" class="btn btn-ghost btn-sm" (click)="cancelClosing()">إلغاء</button>
+                  </div>
+                } @else {
+                  <button type="button" class="btn btn-accent btn-sm" (click)="startClosing(r)">تسجيل الرجوع</button>
+                }
+              }
+              <button type="button" class="btn btn-danger btn-sm" (click)="removeRecord(r)">حذف</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>
+}

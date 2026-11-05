@@ -1,0 +1,9 @@
+{
+  "routes": {
+    "/IT_assets": {},
+    "/IT_assets/assets": {},
+    "/IT_assets/assets/new": {},
+    "/IT_assets/dashboard": {},
+    "/IT_assets/login": {}
+  }
+}

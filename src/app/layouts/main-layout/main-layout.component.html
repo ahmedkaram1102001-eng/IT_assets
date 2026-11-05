@@ -1,0 +1,35 @@
+<div class="shell" dir="rtl">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">IT</span>
+      <div class="brand-text">
+        <strong>تتبع الأصول</strong>
+        <span>أجهزة اللاب توب والتليفونات</span>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="التنقل الرئيسي">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span aria-hidden="true">▦</span>
+        لوحة التحكم
+      </a>
+      <a routerLink="/assets" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span aria-hidden="true">☷</span>
+        كل الأجهزة
+      </a>
+      <a routerLink="/assets/new" routerLinkActive="active">
+        <span aria-hidden="true">＋</span>
+        إضافة جهاز
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <span>البيانات محفوظة محليًا في هذا المتصفح</span>
+      <button type="button" class="logout-button" (click)="logout()">تسجيل الخروج</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+</div>
